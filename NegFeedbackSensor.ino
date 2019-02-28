@@ -5,10 +5,10 @@
 //updated 2/20/2019
 
 #define DEBUG  //This line enables serial printout for debugging purpouses in the mechanics of the Negative feedback function, please comment it out to turn off serial printouts
-#define ctrl_pin 4
-#define sensor_pin 0
-int gain;
-int offset;
+#define ctrl_pin 4 //define the pin that is used for control
+#define sensor_pin 0 //define the analog pin on which the senor is connected
+#define gain_system1 1.0  //define system1 gain as 1 - default value to use for calibration
+#define offset_system1 0.0 //define system1 offset as 0 - default value to use for calibration
 
 //******************Class for negative feedback control*******************
 class NegFeedback
@@ -202,7 +202,7 @@ class NegFeedback
 //
 
 //Decalare Negative Feedback object instance
-NegFeedback system1(sensor_pin, ctrl_pin, 40, 1.5, 2.0, 1, 5000, gain, offset, 0); 
+NegFeedback system1(sensor_pin, ctrl_pin, 40, 1.5, 2.0, 1, 5000, gain_system1, offset_system1, 0); 
 //Define "system1" object with parameters - 
 //Template:  NegFeedback(int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool initialstate)
 
