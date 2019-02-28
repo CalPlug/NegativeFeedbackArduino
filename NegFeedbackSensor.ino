@@ -217,12 +217,14 @@ void setup()
 
 void loop()
 {  
-  bool rlystatus=system1.UpdateFeedback(); //run to sample and return relay status - more variables can be returned using a structure, holder for the status of the actuated relay
-  //Serial.print("Present Control Relay Status:"); Serial.println(rlystatus); //Display the present status of the element control relay returned to the main function for this object call
+  bool rlystatus = system1.UpdateFeedback(); //run to sample and return relay status - more variables can be returned using a structure, holder for the status of the actuated relay
+  Serial.print("Present Control Relay Status:"); Serial.println(rlystatus); //Display the present status of the element control relay returned to the main function for this object call
   
   //If you want to change the setpoint call the following function [shown for an example of 50 PSI (calibrated units in this example)]:
   //system1.ChangeSetPoint (50) 
   
   //If you really want to change the parameters of your negative feedback function (not typical!) use the following function (shown as initializing with the same initial values - pointless case example)
   //system1.ReInitializeSystem (0, 4, 70, 1.5, 2.0, 1, 5000, 0.7789, -17.596, -1)  // Template: NegFeedback(int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, int initialstate) //Note, for the last arguement, -1 is used to keep the relay in the present state rather than forcing it either off or on. 
+
+  delay (100); //delay before rechecking and updating read and control status
 }
