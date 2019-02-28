@@ -5,7 +5,10 @@
 //updated 2/20/2019
 
 #define DEBUG  //This line enables serial printout for debugging purpouses in the mechanics of the Negative feedback function, please comment it out to turn off serial printouts
-  
+#define ctrl_pin 4
+#define sensor_pin 0
+int gain;
+int offset;
 
 //******************Class for negative feedback control*******************
 class NegFeedback
@@ -43,6 +46,7 @@ class NegFeedback
   NegFeedback(int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool initialstate)
   {
   //initialize local variables with the initial object call
+  pressure_set1 = setp;
   Sensor_Pin = readpin;
   RelayCtrl_1_Pin = ctrlpin;
   direct = dir;
@@ -54,9 +58,9 @@ class NegFeedback
 
     //Initiate heating element relay
   pinMode(RelayCtrl_1_Pin, OUTPUT);  //Initiate system element relay, set as output (solenoids, pumps, etc.)
-  if (initialstate = 1)  //Initialstate=1
+  if (initialstate == 1)  //Initialstate=1
     {
-    digitalWrite(RelayCtrl_1_Pin, HIGH); //Initiate system element relay, start HIGH (on) - this is atypical, you should start with this off
+      digitalWrite(RelayCtrl_1_Pin, HIGH); //Initiate system element relay, start HIGH (on) - this is atypical, you should start with this off
     }
     else
     {
@@ -66,7 +70,7 @@ class NegFeedback
   
   void ChangeSetPoint (double setp) //change of setpoint in active usage, call before the update function, and next time it is called, it will be updated.
   {
-  	pressure_set1 = setp;
+    pressure_set1 = setp;
   }
     
   void ReInitializeSystem (int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, int initialstate) //Used to change all the object parameters, note the "initialstate" should typically be -1 if this is called to use the last state to reduce chance of a discontinuity problem
@@ -83,11 +87,11 @@ class NegFeedback
     PC1_offset = offset;
     
    //Re-Initiate heating element relay
-    if (initialstate = 1)  //Initialstate=1
+    if (initialstate == 1)  //Initialstate=1
     {
-    digitalWrite(RelayCtrl_1_Pin, HIGH); //Initiate system element relay, start HIGH (on) - this is atypical, you should start with this off
+      digitalWrite(RelayCtrl_1_Pin, HIGH); //Initiate system element relay, start HIGH (on) - this is atypical, you should start with this off
     }
-    else if (initialstate = 0)
+    else if (initialstate == 0)
     {
       digitalWrite(RelayCtrl_1_Pin, LOW); //Initiate system element relay, start LOW (off)
     }
@@ -107,18 +111,18 @@ class NegFeedback
     double samples[sampleloop]={0};
     for (int i=0; i<sampleloop; i++)//read sequential samples
       {
-        samples[i] = ((double)(analogRead(Sensor_Pin)))+PC1_offset;  //Measurement and calibration of PC input 
+        samples[i] = ((double)PC1_gain*(analogRead(Sensor_Pin)))+PC1_offset;  //Measurement and calibration of PC input 
       }
     for (int i=0; i<sampleloop; i++) //average the sequential samples
       {
         rawpressure_read1=samples[i]+rawpressure_read1;
       }
     rawpressure_read1=rawpressure_read1/(double)sampleloop;
-     
-    pressure_read1 = (rawpressure_read1 * PC1_gain) + PC1_offset;
+    pressure_read1 = rawpressure_read1;
+    
     #ifdef DEBUG
-    Serial.print("Raw Sensor average ADC values:"); Serial.print(rawpressure_read1); Serial.print(" ");
-    Serial.print("Calibrated Sensor value (your calibrated units)):"); Serial.print(pressure_read1); Serial.print(" "); //Display averaged PC temperature
+    //Serial.print("Raw Sensor average ADC values:"); Serial.print(rawpressure_read1); Serial.print(" ");
+    //Serial.print("Calibrated Sensor value (your calibrated units)):"); Serial.print(pressure_read1); Serial.print(" "); //Display averaged PC temperature
     #endif
      runtime=millis(); //set runtime
    
@@ -156,7 +160,7 @@ class NegFeedback
     {
       if (RelayStatus_1==1 && pressure_read1<=pressure_set1-lower_hysteresis_1 && min_trans_time<(lastruntime-runtime) && !overrideindicator)
        {
-         digitalWrite(RelayCtrl_1_Pin, LOW);
+         digitalWrite(RelayCtrl_1_Pin, HIGH);
         lastswitcheventtime = runtime-lastswitcheventtime;  //reset transition time counter (verify no issue with millis() rollover)
         RelayStatus_1=0;  //toggle relay status indicator
         lastruntime=runtime;  //update lastruntime variable - used to check switchine period and to permit checking for millis() overflow event
@@ -165,25 +169,25 @@ class NegFeedback
          }
       else if (RelayStatus_1==0 && pressure_read1>=pressure_set1+upper_hysteresis_1 && min_trans_time<(lastruntime-runtime) && !overrideindicator)
           {
-           digitalWrite(RelayCtrl_1_Pin, HIGH);
+           digitalWrite(RelayCtrl_1_Pin, LOW);
            lastswitcheventtime = runtime-lastswitcheventtime;  //reset transition time counter (verify no issue with millis() rollover)
            RelayStatus_1=1;  //toggle relay status indicator
            lastruntime=runtime;  //update lastruntime variable - used to check switchine period and to permit checking for millis() overflow event
            overrideindicator=0; //reset millis() overflow event indicator
          } 
     else {}
+    }
   
   //Serial DEBUG printout when DEBUG line is active
-    #ifdef DEBUG
+    //#ifdef DEBUG
     Serial.print("SetPoint (your calibrated units):"); Serial.print(pressure_set1); Serial.print(" ");
     Serial.print("Avg. Calibrated Sensor Value(your calibrated units)):"); Serial.print(pressure_read1); Serial.print(" "); //Display averaged PC temperature
-    Serial.print("Current Control Relay Status:"); Serial.print(RelayStatus_1); Serial.print(" "); //Dis[play the present status of the element control relay
+    Serial.print("Current Control Relay Status:"); Serial.print(RelayStatus_1); Serial.print(" "); //Display the present status of the element control relay
     Serial.print("Time between the last switch to the Present Switch State:"); Serial.print(lastswitcheventtime); Serial.print(" "); Serial.print("TotalRuntime(ms):"); Serial.println(runtime);
-    #endif
+    //#endif
     
     return RelayStatus_1; //return the relay status value to function call
     }
-   }
 };
 
 //*********************************************************************
@@ -198,17 +202,23 @@ class NegFeedback
 //
 
 //Decalare Negative Feedback object instance
-NegFeedback system1(0, 4, 70, 1.5, 2.0, 1, 5000, 0.7789, -17.596, 0); //Define "system1" object with parameters - Template:  NegFeedback(int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool initialstate)
+NegFeedback system1(sensor_pin, ctrl_pin, 40, 1.5, 2.0, 1, 5000, gain, offset, 0); 
+//Define "system1" object with parameters - 
+//Template:  NegFeedback(int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool initialstate)
 
 void setup()
 {
-  Serial.begin(115200);  //Move serial fast to improve responsiveness
+  Serial.begin(115200);  //Move serial fast to improve 
+  pinMode(ctrl_pin, OUTPUT);
+  pinMode(sensor_pin, INPUT);
+
+  //Define output pins
 }
 
 void loop()
-{
+{  
   bool rlystatus=system1.UpdateFeedback(); //run to sample and return relay status - more variables can be returned using a structure, holder for the status of the actuated relay
-  Serial.print("Present Control Relay Status:"); Serial.println(rlystatus); //Display the present status of the element control relay returned to the main function for this object call
+  //Serial.print("Present Control Relay Status:"); Serial.println(rlystatus); //Display the present status of the element control relay returned to the main function for this object call
   
   //If you want to change the setpoint call the following function [shown for an example of 50 PSI (calibrated units in this example)]:
   //system1.ChangeSetPoint (50) 
