@@ -4,7 +4,10 @@
 //Michael J. Klopfer, Ph. D. - 2017
 //updated 2/20/2019
 
+//Output options:
 #define DEBUG  //This line enables serial printout for debugging purpouses in the mechanics of the Negative feedback function, please comment it out to turn off serial printouts
+
+//Configuration values:
 #define ctrl_pin 4 //define the pin that is used for control
 #define sensor_pin 0 //define the analog pin on which the senor is connected
 #define gain_system1 1.0  //define system1 gain as 1 - default value to use for calibration
