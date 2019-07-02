@@ -1,2 +1,2 @@
 # NegativeFeedbackArduino
-Simple example of negative feedback (thermostat tsyle control) with hysteresis in an object oriented style for the Arduino
+Simple example of negative feedback (thermostat syle control) with hysteresis in an object oriented style for the Arduino
