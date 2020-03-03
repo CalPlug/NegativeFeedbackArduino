@@ -1,8 +1,9 @@
-//Example Negative Feedback Control: Object orriented loop for Arduino using an analog read from a pressure sensor
+//Example Negative Feedback Control: Object orriented loop for Arduino using an analog read from a pressure sensor.  This code serves as a template/example for further development and integraton into specific applications
 //University of California, Irvine
 //California Institute of Telecommunications and Information Technology
 //Michael J. Klopfer, Ph. D. - 2017
 //updated 2/20/2019
+//Note: In future updates we may want to include a disable option in the UPDATE function such that no matter what the current read value is, the control relay is disabled based on a variable input (e.g. 1=disabled, 0=normal operation)  The function will return the state without providing control, knowledge of the disabled bit setting and this requested state will indicate if the relay is actually being driven.  THis can be used as an ESTOP functional control or pause. 
 
 //Output options:
 #define DEBUG  //This line enables serial printout for debugging purpouses in the mechanics of the Negative feedback function, please comment it out to turn off serial printouts
