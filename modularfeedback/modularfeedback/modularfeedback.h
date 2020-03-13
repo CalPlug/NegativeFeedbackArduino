@@ -1,9 +1,10 @@
 //Enoch Chau 2020: Adopted from Dr. Michael Klopfer, built for modularity
+//Melinda Tran Winter 2020
 //Negative feedback
 #ifndef MODULARFEEDBACK_H
 #define MODULARFEEDBACK_H
 #include <Arduino.h>
-#include <SparkFunSX1509.h>
+//#include <SparkFunSX1509.h>
 
 //******************Class for negative feedback control*******************
 class NegFeedback{

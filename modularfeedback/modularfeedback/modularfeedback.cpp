@@ -38,6 +38,12 @@ NegFeedback::NegFeedback(int readpin, int ctrlpin, double setp, double highhys, 
 
 }
 
+//Read sensor and return data
+double NegFeedback::ReadSensor (int Sensor_Pin) {
+  double data = analogRead(Sensor_Pin);
+  return data;
+}
+
 void NegFeedback::ChangeSetPoint (double setp){ //change of setpoint in active usage, call before the update function, and next time it is called, it will be updated.
   pressure_set1 = setp;
 }
@@ -106,21 +112,20 @@ bool NegFeedback::UpdateFeedback(bool disable){ //called to check value and upda
     }
 
   if (direct==true){
-    if ((RelayStatus_1==0 && pressure_read1<=pressure_set1-lower_hysteresis_1 && min_trans_time<(lastruntime-runtime) && !overrideindicator) || debug){
+    if ((RelayStatus_1==0 && pressure_read1<=pressure_set1-lower_hysteresis_1  && min_trans_time<(lastruntime-runtime) && !overrideindicator) || debug){
 
              //(disable==true) ? digitalWrite(RelayCtrl_1_Pin, LOW) : digitalWrite(RelayCtrl_1_Pin, HIGH); //turns relay off if true, turns relay on otherwise
              if(disable){
                digitalWrite(RelayCtrl_1_Pin,LOW);
-               RelayStatus_1 = 0;
+               //RelayStatus_1 = 0;
              }
 
              else{
                digitalWrite(RelayCtrl_1_Pin,HIGH);
-               RelayStatus_1 = 1;
+               //RelayStatus_1 = 1;
              }
-             //digitalWrite(RelayCtrl_1_Pin, HIGH);
              lastswitcheventtime = runtime-lastswitcheventtime;  //reset transition time counter (verify no issue with millis() rollover)
-             //RelayStatus_1=1;  //toggle relay status indicator
+             RelayStatus_1=1;  //toggle relay status indicator
              lastruntime=runtime;  //update lastruntime variable - used to check switchine period and to permit checking for millis() overflow event
              overrideindicator=0; //reset millis() overflow event indicator
           }
@@ -145,21 +150,21 @@ if (direct==!true)
      {
         if(disable){
           digitalWrite(RelayCtrl_1_Pin,LOW);
+	        //RelayStatus_1 = 1;
         }
 
         else{
         digitalWrite(RelayCtrl_1_Pin,HIGH);
-        RelayStatus_1 = 0;
+        //RelayStatus_1 = 0;
         } 
 
       //(disable==true) ? digitalWrite(RelayCtrl_1_Pin, LOW) : digitalWrite(RelayCtrl_1_Pin, HIGH); //turns relay off if true, turns relay on otherwise 
-      //digitalWrite(RelayCtrl_1_Pin, HIGH);
       lastswitcheventtime = runtime-lastswitcheventtime;  //reset transition time counter (verify no issue with millis() rollover)
-      //RelayStatus_1=0;  //toggle relay status indicator
+      RelayStatus_1=0;  //toggle relay status indicator
       lastruntime=runtime;  //update lastruntime variable - used to check switchine period and to permit checking for millis() overflow event
       overrideindicator=0; //reset millis() overflow event indicator
        }
-    else if (RelayStatus_1==0 && pressure_read1>=pressure_set1+upper_hysteresis_1 && min_trans_time<(lastruntime-runtime) && !overrideindicator)
+    else if (RelayStatus_1==0 &&/* pressure_read1>=pressure_set1+upper_hysteresis_1 && */min_trans_time<(lastruntime-runtime) && !overrideindicator)
         {
          digitalWrite(RelayCtrl_1_Pin, LOW);
          lastswitcheventtime = runtime-lastswitcheventtime;  //reset transition time counter (verify no issue with millis() rollover)
