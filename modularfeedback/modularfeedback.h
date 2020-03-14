@@ -1,5 +1,5 @@
 //Enoch Chau 2020: Adopted from Dr. Michael Klopfer, built for modularity
-//Melinda Tran Winter 2020
+//Melinda Tran, Tritai Nguyen Winter 2020: Modified library written by Enoch Chau
 //Negative feedback
 #ifndef MODULARFEEDBACK_H
 #define MODULARFEEDBACK_H
@@ -33,7 +33,7 @@ class NegFeedback{
     // These maintain the current state
     unsigned long lastruntime=0;//used to detect millis() rollover and indicate transitions
     unsigned long lastswitcheventtime=0; //time in millis() since last switch event
-    bool global_disable; //global var to enable and disable relays
+    bool global_disable; //global variable that acts as a kill switch for the relay (enables relay when false, disables relay when true)
 
   public:
     // Constructor - creates a NegFeedback Object

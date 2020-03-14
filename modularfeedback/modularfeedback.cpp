@@ -1,5 +1,5 @@
 //Enoch Chau 2020: Adopted from Dr. Michael Klopfer, built for modularity
-//Melinda Tran Winter 2020
+//Melinda Tran, Tritai Nguyen Winter 2020: Modified library written by Enoch Chau
 //Negative feedback
 #include "modularfeedback.h"
 //Output options:
@@ -17,7 +17,7 @@ NegFeedback::NegFeedback(int readpin, int ctrlpin, double setp, double highhys, 
   PC1_gain = gain;
   PC1_offset = offset;
 
-  global_disable = disable; //if true, relay disabled (turned off). if false, relay enabled (turned on)
+  global_disable = disable; //global variable that acts as a kill switch for the relay (enables relay when false, disables relay when true)
 
   //Initiate heating element relay
   pinMode(RelayCtrl_1_Pin, OUTPUT);  //Initiate system element relay, set as output (solenoids, pumps, etc.)
@@ -61,13 +61,13 @@ void NegFeedback::ReInitializeSystem (int readpin, int ctrlpin, double setp, dou
   PC1_offset = offset;
 
  //Re-Initiate heating element relay 
-  if (disable == 1)  //relay disabled
+  if (disable == 1)  //relay disabled 
   {
     digitalWrite(RelayCtrl_1_Pin, LOW); //Initiate system element relay, start LOW (off) 
     global_disable = disable;
   
   }
-  else if (disable == 0) //relay enabled
+  else if (disable == 0) //relay enabled 
   {
     digitalWrite(RelayCtrl_1_Pin, HIGH); //Initiate system element relay, start HIGH (on) - this is atypical, you should start with this off
     global_disable = disable;
@@ -185,5 +185,5 @@ if (direct==!true)
   Serial.print("Time between the last switch to the Present Switch State:"); Serial.print(lastswitcheventtime); Serial.print(" "); Serial.print("TotalRuntime(ms):"); Serial.println(runtime);
   #endif
   global_disable = disable;
-  return RelayStatus_1; //return the relay status value to function call
+  return RelayStatus_1; //return the relay status value to function call; if global_disable = true, returns what relay status would have been if relays were enabled 
   }
