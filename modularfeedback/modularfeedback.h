@@ -40,7 +40,7 @@ class NegFeedback{
     // and initializes the member variables and state
     NegFeedback(int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool disable);
     void ChangeSetPoint(double setp);
-    void ReInitializeSystem (int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool disable);
+    void ReInitializeSystem (int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool disable, int initialstate);
     bool UpdateFeedback(bool disable);
   };
 

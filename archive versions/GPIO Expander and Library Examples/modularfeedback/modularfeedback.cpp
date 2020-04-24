@@ -42,7 +42,7 @@ void NegFeedback::ChangeSetPoint (double setp){ //change of setpoint in active u
   pressure_set1 = setp;
 }
 
-void NegFeedback::ReInitializeSystem (int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool disable){ //Used to change all the object parameters, note the "initialstate" should typically be -1 if this is called to use the last state to reduce chance of a discontinuity problem
+void NegFeedback::ReInitializeSystem (int readpin, int ctrlpin, double setp, double highhys, double lowhys, int dir, int trans, float gain, float offset, bool disable, int initialstate){ //Used to change all the object parameters, note the "initialstate" should typically be -1 if this is called to use the last state to reduce chance of a discontinuity problem
   //Caution, this may cause a momentary discontinuity in action, call only when the system is stable and this can happen without consequence.  This is provided as a conventience but should not be something changed regularly
   //Reinitialize local variables
   Sensor_Pin = readpin;
@@ -55,13 +55,13 @@ void NegFeedback::ReInitializeSystem (int readpin, int ctrlpin, double setp, dou
   PC1_offset = offset;
 
  //Re-Initiate heating element relay 
-  if (disable == 1)  //relay disabled
+  if (initialstate == 1)  //relay disabled
   {
     digitalWrite(RelayCtrl_1_Pin, LOW); //Initiate system element relay, start LOW (off) 
     global_disable = disable;
   
   }
-  else if (disable == 0) //relay enabled
+  else if (initialstate == 0) //relay enabled
   {
     digitalWrite(RelayCtrl_1_Pin, HIGH); //Initiate system element relay, start HIGH (on) - this is atypical, you should start with this off
     global_disable = disable;
