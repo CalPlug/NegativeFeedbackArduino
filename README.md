@@ -1,4 +1,6 @@
 # NegativeFeedbackArduino
+***Development by Melinda Tran, Tritai Nguyen, and Enoch Chau***
+
 The NegFeedback class allows for thermostat style control with hysteresis in an object oriented style intended for the Arduino. 
  
 NegFeedbackSensor.ino is an example utilizing this class to control a relay using readings from a pressure sensor. When the pressure rises above a certain threshold, a solenoid is turned off (positive direction negative feedback control). 
